@@ -24,6 +24,8 @@ def cmd(command, *args):
 def main():
     parser = argparse.ArgumentParser("Shellcode builder")
     parser.add_argument("c_file", help="Path to the C file to compile to shellcode")
+    parser.add_argument("--run", help="Run the compiled file", action="store_true")
+    parser.add_argument("--disassemble", help="Disassemble the compiled file", action="store_true")
     # Bonus: add a --disassemble flag to automatically disassemble the shellcode
     # Bonus: add a --run flag to automatically run the shellcode
     args = parser.parse_args()
@@ -40,6 +42,19 @@ def main():
 
     obj = f"{file}.o"
     cmd("clang-20", "-target", "riscv64", "-march=rv64im", "-mcmodel=medany", "-Os", "-c", c_file, "-o", obj)
+    elf = f"{file}.elf"
+    map_obj = f"{file}.map"
+    cmd("ld.lld-20", "-o", elf, "--oformat=elf", "-emit-relocs", "-T", "../riscvm/lib/linker.ld", "--Map", map_obj, obj)
+    pre = f"{file}.pre.bin"
+    cmd("llvm-objcopy-20", "-O", "binary", elf, pre)
+    if args.run:
+        cmd("../riscvm/build-linux/riscvm", pre)
+    if args.disassemble:
+        print(cmd("llvm-objdump-20", "--disassemble", elf))
+
+
+
+
     # TODO: implement the rest of the build pipeline
 
 if __name__ == "__main__":

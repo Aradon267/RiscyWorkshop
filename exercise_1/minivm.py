@@ -26,7 +26,7 @@ class VMContext:
         """Fetch 64-bit immediate value (little-endian)"""
         imm_bytes = self.bytecode[self.pc:self.pc + 8]
         self.pc += 8
-        return struct.unpack('<Q', bytes(imm_bytes))[0]
+        return struct.unpack('<q', bytes(imm_bytes))[0]
 
 # NOTE: You do not need to understand this for the exercises
 class VMPreprocessor:
@@ -106,6 +106,7 @@ def handler_mul(ctx: VMContext):
 
 def execute_bytecode(preprocessor: VMPreprocessor, r0: int, r1: int, r2: int, r3: int) -> int:
     ctx = VMContext(preprocessor.data, preprocessor.labels)
+    print(ctx)
     ctx.regs[0] = r0
     ctx.regs[1] = r1
     ctx.regs[2] = r2
@@ -114,6 +115,7 @@ def execute_bytecode(preprocessor: VMPreprocessor, r0: int, r1: int, r2: int, r3
     while True:
         # Get instruction opcode
         opcode = ctx.fetch()
+        print(opcode)
         match opcode:
             case 0:
                 handler_label(ctx)

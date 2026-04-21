@@ -185,6 +185,7 @@ execute_bytecode(const VMPreprocessor<>& bytecode, uint64_t r0, uint64_t r1, uin
     {
         // Get instruction opcode
         uint8_t opcode = ctx.fetch();
+        printf("%" PRIu8 "\n", opcode);
         switch (opcode)
         {
         case 0:
